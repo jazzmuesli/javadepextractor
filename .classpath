@@ -14,5 +14,14 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi-3.11.2.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.text_3.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core-3.12.2.jar"/>
+	<classpathentry kind="lib" path="/Users/preich/.m2/repository/org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2.jar" sourcepath="/Users/preich/.m2/repository/org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.slf4j"/>
+			<attribute name="maven.artifactId" value="slf4j-api"/>
+			<attribute name="maven.version" value="1.7.2"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

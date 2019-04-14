@@ -1,7 +1,6 @@
 package core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ast.DCLDeepDependencyVisitor;
 import dependencies.Dependency;
@@ -22,6 +24,7 @@ import exception.DCLException;
 import util.DCLUtil;
 
 public class Architecture {
+	private static final Logger LOG = LoggerFactory.getLogger(Architecture.class);
 	/**
 	 * String: class name Collection<Dependency>: Collection of established
 	 * dependencies
@@ -45,7 +48,7 @@ public class Architecture {
 
 	public Architecture(String projectPath) throws CoreException, IOException, DCLException, InterruptedException {
 		this.projectClasses = new HashMap<String, Collection<Dependency>>();
-		this.typeBindings = new ArrayList<ITypeBinding>();
+		this.typeBindings = new CopyOnWriteArrayList<ITypeBinding>();
 		this.modules = new ConcurrentHashMap<String, String>();
 
 		List<String> classPath = new LinkedList<String>();
@@ -57,13 +60,19 @@ public class Architecture {
 		String[] classPathEntries = classPath.toArray(new String[classPath.size()]);
 		String[] sourcePathEntries = sourcePath.toArray(new String[sourcePath.size()]);
 
-		for (String f : DCLUtil.getFilesFromProject(projectPath)) {
-			DCLDeepDependencyVisitor ddv = DCLUtil.useAST(f, classPathEntries, sourcePathEntries);
-			Collection<Dependency> deps = ddv.getDependencies();
-			// this.filterCommonDependencies(deps);
-			this.projectClasses.put(ddv.getClassName(), deps);
-			this.typeBindings.add(ddv.getITypeBinding());
-		}
+		Collection<String> filesFromProject = DCLUtil.getFilesFromProject(projectPath);
+		filesFromProject.parallelStream().forEach(f -> {
+			DCLDeepDependencyVisitor ddv;
+			try {
+				ddv = DCLUtil.useAST(f, classPathEntries, sourcePathEntries);
+				Collection<Dependency> deps = ddv.getDependencies();
+				// this.filterCommonDependencies(deps);
+				this.projectClasses.put(ddv.getClassName(), deps);
+				this.typeBindings.add(ddv.getITypeBinding());
+			} catch (IOException | DCLException e) {
+				LOG.error("Cannot handle file " + f + " due to error:  " + e.getMessage(), e);
+			}
+		});
 
 	}
 
@@ -133,7 +142,7 @@ public class Architecture {
 				}
 			}
 		} catch (NullPointerException npe) {
-			System.out.println("Error in Filtering Common Dependencies");
+			LOG.error("Error in Filtering Common Dependencies: dependendencies=" + dependencies);
 		}
 
 	}

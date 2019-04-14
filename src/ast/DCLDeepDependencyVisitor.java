@@ -30,7 +30,10 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import core.Architecture;
 import dependencies.AccessDependency;
 import dependencies.AnnotateDependency;
 import dependencies.CreateDependency;
@@ -42,7 +45,10 @@ import dependencies.ThrowDependency;
 import exception.DCLException;
 import util.DCLUtil;
 
+import java.util.Arrays;
+
 public class DCLDeepDependencyVisitor extends ASTVisitor {
+	private static final Logger LOG = LoggerFactory.getLogger(DCLDeepDependencyVisitor.class);
 	private List<Dependency> dependencies;
 	private ITypeBinding typeBinding;
 
@@ -61,6 +67,7 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 			this.cUnit.accept(this);
 
 		} catch (Exception e) {
+			LOG.error("Can't handle " + f + " using classpath: " + Arrays.asList(classPathEntries) + ", sourcePath: " + Arrays.asList(sourcePathEntries), e);
 			throw new DCLException(e, this.cUnit);
 		}
 	}
@@ -421,12 +428,12 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 			switch (relevantParent.getNodeType()) {
 			case ASTNode.METHOD_DECLARATION:
 				this.dependencies.add(new AccessDependency(this.className,
-						this.getTargetClassName(node.getQualifier().resolveTypeBinding()),
+						this.getTargetClassName(resolveNodeBinding(node)),
 						cUnit.getLineNumber(node.getStartPosition()), node.getStartPosition(), node.getLength()));
 				break;
 			case ASTNode.INITIALIZER:
 				this.dependencies.add(new AccessDependency(this.className,
-						this.getTargetClassName(node.getQualifier().resolveTypeBinding()),
+						this.getTargetClassName(resolveNodeBinding(node)),
 						cUnit.getLineNumber(node.getStartPosition()), node.getStartPosition(), node.getLength()));
 				break;
 			}
@@ -434,6 +441,15 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 		}
 
 		return true;
+	}
+
+	private ITypeBinding resolveNodeBinding(QualifiedName node) {
+		Name qualifier = node.getQualifier();
+		ITypeBinding binding = qualifier.resolveTypeBinding();
+		if (binding == null) {
+			throw new IllegalArgumentException("Can't resolve " + node);
+		}
+		return binding;
 	}
 
 	@Override
