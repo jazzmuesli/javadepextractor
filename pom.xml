@@ -15,6 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<jdt.version>3.15.0</jdt.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -31,51 +32,52 @@
 			<version>2.4</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.eclipse.core/contenttype -->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.core/contenttype 
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>contenttype</artifactId>
 			<version>3.4.200-v20140207-1251</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.core.jobs -->
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.core.jobs 
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.jobs</artifactId>
 			<version>3.8.0</version>
-		</dependency>
+		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.eclipse.core/org.eclipse.core.resources -->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.core/org.eclipse.core.resources 
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>org.eclipse.core.resources</artifactId>
 			<version>3.9.1.v20140825-1431</version>
-		</dependency>
+		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.eclipse.core/runtime -->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.core/runtime 
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>runtime</artifactId>
 			<version>3.10.0-v20140318-2214</version>
-		</dependency>
+		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.eclipse.equinox/common -->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.equinox/common 
 		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
 			<artifactId>common</artifactId>
 			<version>3.6.200-v20130402-1505</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.equinox.preferences -->
+		-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.equinox.preferences 
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.equinox.preferences</artifactId>
 			<version>3.6.1</version>
-		</dependency>
+		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.core -->
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>3.12.2</version>
+			<version>${jdt.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.ui 
 		<dependency>
@@ -91,26 +93,27 @@
 			<version>3.12.1</version>
 		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.osgi -->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.osgi 
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>3.11.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.text/org.eclipse.text -->
+		-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.text/org.eclipse.text 
 		<dependency>
 			<groupId>org.eclipse.text</groupId>
 			<artifactId>org.eclipse.text</artifactId>
 			<version>3.5.101</version>
 		</dependency>
+-->
 
-
-		<!-- https://mvnrepository.com/artifact/org.apache.ant/ant -->
+		<!-- https://mvnrepository.com/artifact/org.apache.ant/ant 
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
 			<version>1.10.5</version>
-		</dependency>
+		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.bcel/bcel 
 		<dependency>

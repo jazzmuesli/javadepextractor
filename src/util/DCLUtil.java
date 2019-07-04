@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -254,7 +256,8 @@ public final class DCLUtil {
 		parser.setUnitName("Dependency-Tool");
 		parser.setBindingsRecovery(true);
 
-		return (CompilationUnit) parser.createAST(null);
+		IProgressMonitor monitor = new NullProgressMonitor();
+		return (CompilationUnit) parser.createAST(monitor);
 	}
 
 	public static Set<ITypeBinding> getSubTypes(List<ITypeBinding> typeBindings, String desc) {

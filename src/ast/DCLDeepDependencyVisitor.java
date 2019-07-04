@@ -33,7 +33,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import core.Architecture;
 import dependencies.AccessDependency;
 import dependencies.AnnotateDependency;
 import dependencies.CreateDependency;
@@ -44,8 +43,6 @@ import dependencies.ImplementDependency;
 import dependencies.ThrowDependency;
 import exception.DCLException;
 import util.DCLUtil;
-
-import java.util.Arrays;
 
 public class DCLDeepDependencyVisitor extends ASTVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(DCLDeepDependencyVisitor.class);

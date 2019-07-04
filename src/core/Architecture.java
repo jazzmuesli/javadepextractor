@@ -1,6 +1,7 @@
 package core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -24,17 +26,17 @@ import exception.DCLException;
 import util.DCLUtil;
 
 public class Architecture {
-	private static final Logger LOG = LoggerFactory.getLogger(Architecture.class);
+	private final Logger LOG;
 	/**
 	 * String: class name Collection<Dependency>: Collection of established
 	 * dependencies
 	 */
-	public Map<String, Collection<Dependency>> projectClasses = null;
+	public Map<String, Collection<Dependency>> projectClasses = new HashMap<String, Collection<Dependency>>();
 
 	/**
 	 * String: module name String: module description
 	 */
-	public Map<String, String> modules = null;
+	public Map<String, String> modules = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Collection<DependencyConstraint>: Collection of dependency constraints
@@ -44,13 +46,12 @@ public class Architecture {
 	 * List of all ITypeBinding
 	 * 
 	 */
-	public List<ITypeBinding> typeBindings = null;
+	public List<ITypeBinding> typeBindings = new CopyOnWriteArrayList<ITypeBinding>();
+
 
 	public Architecture(String projectPath) throws CoreException, IOException, DCLException, InterruptedException {
-		this.projectClasses = new HashMap<String, Collection<Dependency>>();
-		this.typeBindings = new CopyOnWriteArrayList<ITypeBinding>();
-		this.modules = new ConcurrentHashMap<String, String>();
 
+		LOG = LoggerFactory.getLogger(Architecture.class);
 		List<String> classPath = new LinkedList<String>();
 		List<String> sourcePath = new LinkedList<String>();
 
@@ -61,19 +62,27 @@ public class Architecture {
 		String[] sourcePathEntries = sourcePath.toArray(new String[sourcePath.size()]);
 
 		Collection<String> filesFromProject = DCLUtil.getFilesFromProject(projectPath);
-		filesFromProject.parallelStream().forEach(f -> {
-			DCLDeepDependencyVisitor ddv;
+		extractDependencies(classPathEntries, sourcePathEntries, filesFromProject);
+
+	}
+
+	public Architecture(Logger log) {
+		this.LOG = log;
+	}
+
+	public void extractDependencies(String[] classPathEntries, String[] sourcePathEntries,
+			Collection<String> filesFromProject) {
+		filesFromProject.stream().forEach(f -> {
 			try {
-				ddv = DCLUtil.useAST(f, classPathEntries, sourcePathEntries);
+				DCLDeepDependencyVisitor ddv = DCLUtil.useAST(f, classPathEntries, sourcePathEntries);
 				Collection<Dependency> deps = ddv.getDependencies();
 				// this.filterCommonDependencies(deps);
 				this.projectClasses.put(ddv.getClassName(), deps);
 				this.typeBindings.add(ddv.getITypeBinding());
-			} catch (IOException | DCLException e) {
+			} catch (Throwable e) {
 				LOG.error("Cannot handle file " + f + " due to error:  " + e.getMessage(), e);
 			}
 		});
-
 	}
 
 	public Set<String> getProjectClasses() {
@@ -84,15 +93,30 @@ public class Architecture {
 		return projectClasses.get(className);
 	}
 
-	public Collection<String> getDependencies() {
-		Collection<String> listDep = new HashSet<String>();
+	/**
+	 * provide dependencies between class A and B
+	 * @return
+	 */
+	public Collection<Dependency> getClassDependencies() {
+		Collection<Dependency> listDep = new ArrayList<Dependency>();
 		for (Map.Entry<String, Collection<Dependency>> entryDep : projectClasses.entrySet()) {
 			for (Dependency dep : entryDep.getValue()) {
-				String s = dep.getClassNameA() + "," + dep.getDependencyType().getValue() + "," + dep.getClassNameB();
-				listDep.add(s);
+				listDep.add(dep);
 			}
 		}
 		return listDep;
+	}
+	/**
+	 * provide dependencies as list of CSV lines
+	 * @return
+	 */
+	public Collection<String> getDependencies() {
+		return getClassDependencies().stream().map(Architecture::toCSV).collect(Collectors.toSet());
+	}
+
+	public static String toCSV(Dependency dep) {
+		String s = dep.getClassNameA() + "," + dep.getDependencyType().getValue() + "," + dep.getClassNameB() +","+dep.getLineNumber();
+		return s;
 	}
 
 	public Dependency getDependency(String classNameA, String classNameB, Integer lineNumberA,
