@@ -31,7 +31,7 @@ public class Architecture {
 	 * String: class name Collection<Dependency>: Collection of established
 	 * dependencies
 	 */
-	public Map<String, Collection<Dependency>> projectClasses = new HashMap<String, Collection<Dependency>>();
+	public Map<String, Collection<Dependency>> projectClasses = new ConcurrentHashMap<String, Collection<Dependency>>();
 
 	/**
 	 * String: module name String: module description
@@ -72,7 +72,7 @@ public class Architecture {
 
 	public void extractDependencies(String[] classPathEntries, String[] sourcePathEntries,
 			Collection<String> filesFromProject) {
-		filesFromProject.stream().forEach(f -> {
+		filesFromProject.parallelStream().forEach(f -> {
 			try {
 				DCLDeepDependencyVisitor ddv = DCLUtil.useAST(f, classPathEntries, sourcePathEntries);
 				Collection<Dependency> deps = ddv.getDependencies();
